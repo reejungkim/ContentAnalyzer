@@ -100,8 +100,22 @@ class InstagramScraper(BaseScraper):
             logger.info(f"Instagram에서 '#{topic}' 관련 {len(posts)}건 수집 완료")
             return posts
         except requests.HTTPError as e:
-            # 429: Rate limit 초과, 400: 잘못된 요청 등
-            logger.error(f"Instagram API 에러: {e}")
+            # Meta API는 JSON 응답에 상세 에러 정보를 포함함
+            # 예: {"error": {"message": "...", "type": "OAuthException", "code": 190}}
+            error_detail = ""
+            try:
+                error_json = e.response.json()
+                error_info = error_json.get("error", {})
+                error_detail = (
+                    f"\n  → 에러 메시지: {error_info.get('message', 'N/A')}"
+                    f"\n  → 에러 타입: {error_info.get('type', 'N/A')}"
+                    f"\n  → 에러 코드: {error_info.get('code', 'N/A')}"
+                    f"\n  → 서브코드: {error_info.get('error_subcode', 'N/A')}"
+                )
+            except Exception:
+                error_detail = f"\n  → 응답 본문: {e.response.text[:500]}"
+
+            logger.error(f"Instagram API 에러: {e}{error_detail}")
             return []
         except requests.ConnectionError:
             logger.error("Instagram API 연결 실패 — 네트워크 확인 필요")

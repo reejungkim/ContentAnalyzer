@@ -85,13 +85,14 @@ def cli(topic: str, limit: int, demo: bool, export: str | None):
         TextColumn("[progress.description]{task.description}"),
         console=console,
     ) as progress:
-        # Threads 수집
-        task1 = progress.add_task("📱 Threads 데이터 수집 중...", total=None)
-        if use_demo:
-            threads_posts = DemoScraper(Platform.THREADS).search(topic, limit)
-        else:
-            threads_posts = ThreadsScraper().search(topic, limit)
-        progress.update(task1, completed=True, description=f"📱 Threads: {len(threads_posts)}건 수집 완료")
+        # [TODO] Threads API 수집 — 현재 API 권한 문제로 비활성화
+        # task1 = progress.add_task("📱 Threads 데이터 수집 중...", total=None)
+        # if use_demo:
+        #     threads_posts = DemoScraper(Platform.THREADS).search(topic, limit)
+        # else:
+        #     threads_posts = ThreadsScraper().search(topic, limit)
+        # progress.update(task1, completed=True, description=f"📱 Threads: {len(threads_posts)}건 수집 완료")
+        threads_posts: list[SocialPost] = []
 
         # Instagram 수집
         task2 = progress.add_task("📸 Instagram 데이터 수집 중...", total=None)
