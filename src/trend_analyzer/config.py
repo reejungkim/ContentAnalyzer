@@ -6,7 +6,7 @@ config.py — 환경변수 및 설정 관리 모듈
 """
 
 from pydantic_settings import BaseSettings
-from pydantic import Field
+from pydantic import Field, ConfigDict
 
 
 class Settings(BaseSettings):
@@ -14,6 +14,12 @@ class Settings(BaseSettings):
     앱 전체 설정.
     .env 파일 또는 환경변수에서 값을 자동 로드합니다.
     """
+
+    # Pydantic v2 방식의 설정 (deprecated class Config 대체)
+    model_config = ConfigDict(
+        env_file=".env",
+        env_file_encoding="utf-8",
+    )
 
     # --- Meta API 인증 ---
     # Meta Developer 앱에서 발급받은 장기(long-lived) 액세스 토큰
@@ -58,9 +64,8 @@ class Settings(BaseSettings):
         """
         return not self.meta_access_token
 
-    class Config:
-        env_file = ".env"
-        env_file_encoding = "utf-8"
+
+
 
 
 # 전역 설정 인스턴스 — 앱 어디서든 import해서 사용

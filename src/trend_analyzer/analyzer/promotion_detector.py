@@ -23,17 +23,20 @@ from trend_analyzer.models import SocialPost, PromotionSignal
 
 # 스폰서/광고를 나타내는 키워드 패턴 (대소문자 무시)
 SPONSOR_KEYWORDS = [
-    r"\b#ad\b",
-    r"\b#sponsored\b",
-    r"\b#광고\b",
-    r"\b#스폰서\b",
-    r"paid\s*partnership",
-    r"sponsored\s*post",
-    r"브랜디드\s*콘텐츠",
-    r"광고\s*포함",
+    r"(?:^|\s)#ad(?:\s|$)",       # #ad (독립된 해시태그)
+    r"(?:^|\s)#sponsored(?:\s|$)", # #sponsored
+    r"(?:^|\s)#광고(?:\s|$)",      # #광고
+    r"(?:^|\s)#스폰서(?:\s|$)",    # #스폰서
+    r"paid\s*partnership",         # Paid partnership
+    r"sponsored\s*post",           # Sponsored post
+    r"브랜디드\s*콘텐츠",           # 브랜디드 콘텐츠
+    r"광고\s*포함",                 # 광고 포함
 ]
 
 # 키워드를 하나의 정규식으로 컴파일 (성능 최적화)
+# 왜 \b 대신 (?:^|\s)를 쓰나요?
+# → \b는 word boundary인데, #은 non-word 문자라서
+#   "#ad" 앞의 \b가 매칭되지 않습니다.
 _SPONSOR_PATTERN = re.compile(
     "|".join(SPONSOR_KEYWORDS),
     re.IGNORECASE
